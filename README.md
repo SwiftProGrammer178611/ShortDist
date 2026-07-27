@@ -1,0 +1,1 @@
+This is an openstreetmap view of a location, and you can click anywhere around on the map, and the program will calculate the distance and path to take to get to that location. Had to learn leaflet and how to use it, so I used the docs to learn it and make this.
