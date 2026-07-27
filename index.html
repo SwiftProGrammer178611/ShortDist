@@ -12,11 +12,76 @@
             margin: 0;
             padding: 0;
         }
+        #myLatitude {
+            z-index: 10000;
+            padding: 8px;
+            width: 80%;
+            border-color:green;
+            border-width:2px;
+            border-style:solid;
+            border-radius:10px;
+        }
+        #myLongitude {
+            z-index: 10000;
+            padding: 8px;
+            width:80%;
+            border-radius: 10px;
+            border-color:rgb(12, 94, 156);
+            border-width: 2px;
+            border-style: solid;
+        }
+        #myDesintationLatitude {
+            z-index: 10000;
+            padding: 8px;
+            width: 80%;
+            border-color:green;
+            border-width:2px;
+            border-style:solid;
+            border-radius:10px;
+        }
+        #myDesintationLongitude {
+            z-index: 10000;
+            padding: 8px;
+            width:80%;
+            border-radius: 10px;
+            border-color:rgb(12, 94, 156);
+            border-width: 2px;
+            border-style: solid;
+        }
+        #location_inputs {
+            position:absolute;
+            display: grid;
+            grid-template-areas: "auto";
+            padding: 10px;
+            transform:translateX(80%);
+            z-index:10000;
+            /* originally thought padding would add space between the inputs, 
+            but really the way to do it is with gap to add spacing in between
+            ELEMENTS!
+             */
+            gap:10%;
+            top:10px;
+            right:26%;
+        }
     </style>
 </head>
-
 <body>
-    <div id="map" style="width:100%; height:100vh;"></div>
+    <div id="map" style="width:100%; height:100vh;">
+        <!-- the problem with the input here is that barebones like this,
+        it leaflet detects a 'click' location under the input area. 
+        to fix this we add an event listener and don't listen for events 
+        happening on the input area: -->
+        <div id="location_inputs">
+            <h1>Your location info HERE:</h1>
+            <input type="text" id="myLongitude" placeholder="Type your Longitude here">
+            <input type="text" id="myLatitude" placeholder="Type your Latitude here">
+
+            <h1>Your destination info HERE:</h1>
+            <input type="text" id="myDesintationLongitude" placeholder="Type your locationLongitude here">
+            <input type="text" id="myDesintationLatitude" placeholder="Type your locationLatitude here">
+        </div>
+    </div>
+
     <script src="https://unpkg.com/leaflet@1.8.0/dist/leaflet.js"></script>
     <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
     <script>
@@ -29,9 +94,36 @@
             iconUrl: 'https://cn-geo1.uber.com/image-proc/crop/resizecrop/udam/format=auto/width=835/height=470/srcb64=aHR0cHM6Ly90Yi1zdGF0aWMudWJlci5jb20vcHJvZC91ZGFtLWFzc2V0cy8xZDI2ZDMwYS0zMTNhLTQ3ZjktYTdjYS1kZDllMmRhZTk0NDUucG5n',
             iconSize: [130, 70]
         })
-        var marker = L.marker([40.0001, -75.1956], { icon: taxiIcon }).addTo(map);
+        
+        var markerMyLoc = L.marker([40.0001, -75.1956], { icon: taxiIcon }).addTo(map);
 
-        // so this works when you click on the map
+        var inputMyLongitudeID = document.getElementById("myLongitude")
+        var inputMyLongitudeVal = inputLongitudeID.value;
+        var inputMyLatitudeID = document.getElementById("myLatitude");
+        var inputMyLatitudeVal = inputLatitudeID.value;
+
+        var inputLocationLongitudeID = document.getElementById("myDesintationLongitude")
+        var inputLocationLongitudeVal = inputLongitudeID.value;
+        var inputLocationLatitudeID = document.getElementById("myDesintationLatitude");
+        var inputLocationLatitudeVal = inputLatitudeID.value;
+        
+        var stopListening1 = document.getElementById("myLongitude");
+        var stopListening2 = document.getElementById("myLatitude");
+        var stopListening3 = document.getElementById("myDesintationLongitude");
+        var stopListening4 = document.getElementById("myDesintationLatitude");
+        // if(inputDesintationVal){
+        //     var marker = L.marker([])
+            
+        // }
+
+        // this is the fix for the input, leaflet provides a solution for this:
+        L.DomEvent.disableClickPropagation(stopListening1);
+        L.DomEvent.disableClickPropagation(stopListening2);
+        L.DomEvent.disableClickPropagation(stopListening3);
+        L.DomEvent.disableClickPropagation(stopListening4);
+        
+
+        // so this works when you click on the map, and where user clicks.
         map.on('click', function (e) {
             var newMarker = L.marker([e.latlng.lat, e.latlng.lng]).addTo(map);
             L.Routing.control({
@@ -49,7 +141,9 @@
             }).addTo(map);
         });
 
+        // map.on(stopListening.innerHTML, function(e) {
+
+        // })
     </script>
 </body>
-
 </html>
