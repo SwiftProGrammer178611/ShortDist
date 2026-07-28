@@ -42,7 +42,7 @@
         #myDesintationLongitude {
             z-index: 10000;
             padding: 8px;
-            width:80%;
+            width:70%;
             border-radius: 10px;
             border-color:rgb(12, 94, 156);
             border-width: 2px;
@@ -53,15 +53,53 @@
             display: grid;
             grid-template-areas: "auto";
             padding: 10px;
-            transform:translateX(80%);
             z-index:10000;
             /* originally thought padding would add space between the inputs, 
             but really the way to do it is with gap to add spacing in between
             ELEMENTS!
              */
             gap:10%;
-            top:10px;
-            right:26%; 
+            top:10%;
+
+        }
+        #submit{
+            padding:8px;
+            border-radius:50px;
+            width:30%;
+            background-image:linear-gradient(to right, rgb(0, 123, 255) , rgb(28, 147, 26));
+            color:white;
+            font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            border-color:rgb(0, 0, 0);
+            border-style:solid;
+        }
+        #fillCurrentLoc{
+            padding:8px;
+            border-radius:50px;
+            width:60%;
+            background-image:linear-gradient(to right, rgb(26, 95, 33), rgb(11, 229, 185));
+            color:white;
+            border-color:azure;
+            border-style:solid;
+        }
+        #locationTitle{
+            color:white;
+            background-color:rgb(65, 130, 108);
+            padding-right:10px;
+            padding-left:10px;
+            border-radius:15px;
+            padding-top:5px;
+            padding-bottom:5px;
+            font-size:18px;
+        }
+        #destinationTitle{
+            color:white;
+            background-color:rgb(65, 130, 108);
+            padding-right:10px;
+            padding-left:10px;
+            border-radius:15px;
+            padding-top:5px;
+            padding-bottom:5px;
+            font-size:18px;
         }
     </style>
 </head>
@@ -73,14 +111,19 @@
         happening on the input area: -->
 
         <div id="location_inputs">
-            <h1>Your location info HERE:</h1>
-            <input type="text" id="myLongitude" placeholder="Type your Longitude here">
-            <input type="text" id="myLatitude" placeholder="Type your Latitude here">
-            <button id="submit" type="submit">SUBMIT</button>
-            <h1>Your destination info HERE:</h1>
+            <h1 id="locationTitle">Your location info HERE:</h1>
+            <input type="text" id="myLongitude" placeholder="Current Longitude here">
+            <input type="text" id="myLatitude" placeholder="Current Latitude here">
+            <h1 id="destinationTitle">Your destination info HERE:</h1>
             <input type="text" id="myDesintationLongitude" placeholder="Type your locationLongitude here">
             <input type="text" id="myDesintationLatitude" placeholder="Type your locationLatitude here">
+            <button id="submit" type="submit">Start</button>
+            <button id="fillCurrentLoc" type="submit">Get and fill Current Location</button>
+            <div id="displayDirections">
+
         </div>
+        </div>
+        
     </div>
     <script src="https://unpkg.com/leaflet@1.8.0/dist/leaflet.js"></script>
     <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
@@ -114,9 +157,16 @@
 
         // if(inputDesintationVal){
         //     const marker = L.marker([])
-            
         // }
-        
+        function showDirections(route) {
+    const directionsDiv = document.getElementById('displayDirections');
+    let html = '<strong>Directions:</strong><ol>';
+    route.instructions.forEach(function(step) {
+        html += '<li>' + step.text + '</li>';
+    });
+    html += '</ol>';
+    directionsDiv.innerHTML = html;
+}
         // this is the fix for the input, leaflet provides a solution for this:
         L.DomEvent.disableClickPropagation(stopListening1);
         L.DomEvent.disableClickPropagation(stopListening2);
@@ -125,42 +175,55 @@
         L.DomEvent.disableClickPropagation(document.getElementById('location_inputs'));
         
         document.getElementById('submit').addEventListener('click', function() {
-            const startLat = parseFloat(inputMyLatitudeID.value);
-            const startLng = parseFloat(inputMyLongitudeID.value);
-            const endLng = parseFloat(inputLocationLongitudeID.value);
-            const endLat = parseFloat(inputLocationLatitudeID.value);
+    const startLat = parseFloat(inputMyLatitudeID.value);
+    const startLng = parseFloat(inputMyLongitudeID.value);
+    const endLng = parseFloat(inputLocationLongitudeID.value);
+    const endLat = parseFloat(inputLocationLatitudeID.value);
 
-            markerMyLoc.setLatLng([startLat,startLng]);
-            L.Routing.control({
-                waypoints:[
-                    L.latLng(startLat,startLng),
-                    L.latLng(endLat,endLng)
-                ]
-            }).on('routesfound', function(e) {
-                e.routes[0].coordinates.forEach(function (coord, index) {
-                    setTimeout(function () {
-                        markerMyLoc.setLatLng([coord.lat, coord.lng]);
-                    }, 100*index)
-                })
-            }).addTo(map);
-        });
+    markerMyLoc.setLatLng([startLat, startLng]);
+    L.Routing.control({
+        waypoints: [
+            L.latLng(startLat, startLng),
+            L.latLng(endLat, endLng)
+        ]
+    }).on('routesfound', function(e) {
+        showDirections(e.routes[0]);
+        e.routes[0].coordinates.forEach(function (coord, index) {
+            setTimeout(function () {
+                markerMyLoc.setLatLng([coord.lat, coord.lng]);
+            }, 100 * index)
+        })
+    }).addTo(map);
+});
+
+map.on('click', function (e) {
+    const newMarker = L.marker([e.latlng.lat, e.latlng.lng]).addTo(map);
+    L.Routing.control({
+        waypoints: [
+            markerMyLoc.getLatLng(),
+            L.latLng(e.latlng.lat, e.latlng.lng)
+        ]
+    }).on('routesfound', function (e) {
+        showDirections(e.routes[0]);
+        e.routes[0].coordinates.forEach(function (coord, index) {
+            setTimeout(function () {
+                markerMyLoc.setLatLng([coord.lat, coord.lng]);
+            }, 100 * index)
+        })
+    }).addTo(map);
+});
+
+document.getElementById('fillCurrentLoc').addEventListener('click', function() {
+    navigator.geolocation.getCurrentPosition(function(position) {
+        inputMyLatitudeID.value = position.coords.latitude;
+        inputMyLongitudeID.value = position.coords.longitude;
+    }, function(error) {
+        alert("Couldn't get your location :'(" + error.message);
+    });
+});
+
         // so this works when you click on the map, and where user clicks.
-        map.on('click', function (e) {
-            const newMarker = L.marker([e.latlng.lat, e.latlng.lng]).addTo(map);
-            L.Routing.control({
-                waypoints: [
-                    markerMyLoc.getLatLng(),
-                    L.latLng(e.latlng.lat, e.latlng.lng)
-                ]
-            }).on('routesfound', function (e) {
-                const routes = e.routes;
-                e.routes[0].coordinates.forEach(function (coord, index) {
-                    setTimeout(function () {
-                        markerMyLoc.setLatLng([coord.lat, coord.lng]);
-                    }, 100 * index)
-                })
-            }).addTo(map);
-        });
+        
         // map.on(stopListening.innerHTML, function(e) {
         // })
     </script>
