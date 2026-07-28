@@ -42,7 +42,7 @@
         #myDesintationLongitude {
             z-index: 10000;
             padding: 8px;
-            width:70%;
+            width:78%;
             border-radius: 10px;
             border-color:rgb(12, 94, 156);
             border-width: 2px;
@@ -66,7 +66,7 @@
             padding:8px;
             border-radius:50px;
             width:30%;
-            background-image:linear-gradient(to right, rgb(0, 123, 255) , rgb(28, 147, 26));
+            background-image:linear-gradient(to right, rgb(11, 173, 92) , rgb(1, 59, 0));
             color:white;
             font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             border-color:rgb(0, 0, 0);
@@ -76,10 +76,11 @@
             padding:8px;
             border-radius:50px;
             width:60%;
-            background-image:linear-gradient(to right, rgb(26, 95, 33), rgb(11, 229, 185));
+            background-image:linear-gradient(to right, rgb(26, 95, 33), rgb(60, 147, 16));
             color:white;
-            border-color:azure;
+            border-color:rgb(2, 3, 3);
             border-style:solid;
+            font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         #locationTitle{
             color:white;
@@ -90,6 +91,10 @@
             padding-top:5px;
             padding-bottom:5px;
             font-size:18px;
+            font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            border-width:2px;
+            border-color:rgb(4, 4, 4);
+            border-style:solid;
         }
         #destinationTitle{
             color:white;
@@ -100,6 +105,10 @@
             padding-top:5px;
             padding-bottom:5px;
             font-size:18px;
+            border-width:2px;
+            border-color:rgb(4, 4, 4);
+            border-style:solid;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
     </style>
 </head>
@@ -115,12 +124,13 @@
             <input type="text" id="myLongitude" placeholder="Current Longitude here">
             <input type="text" id="myLatitude" placeholder="Current Latitude here">
             <h1 id="destinationTitle">Your destination info HERE:</h1>
-            <input type="text" id="myDesintationLongitude" placeholder="Type your locationLongitude here">
-            <input type="text" id="myDesintationLatitude" placeholder="Type your locationLatitude here">
-            <button id="submit" type="submit">Start</button>
-            <button id="fillCurrentLoc" type="submit">Get and fill Current Location</button>
+            <input type="text" id="myDesintationLongitude" placeholder="Location Longitude">
+            <input type="text" id="myDesintationLatitude" placeholder="Location Latitude">
+            <div class="btnGrid">
+                <button id="submit" type="submit">Start</button>
+                <button id="fillCurrentLoc" type="submit">Get and fill Current Location</button>
+            </div>
             <div id="displayDirections">
-
         </div>
         </div>
         
@@ -229,3 +239,4 @@ document.getElementById('fillCurrentLoc').addEventListener('click', function() {
     </script>
 </body>
 </html>
+
