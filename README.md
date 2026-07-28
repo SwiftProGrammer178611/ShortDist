@@ -1,1 +1,5 @@
-This is an openstreetmap view of a location, and you can click anywhere around on the map, and the program will calculate the distance and path to take to get to that location. Had to learn leaflet and how to use it, so I used the docs to learn it and make this.
+# ShortDist
+
+<img width="1100" height="864" alt="Screenshot 2026-07-28 at 12 30 54 AM" src="https://github.com/user-attachments/assets/033db053-913c-4e17-b98f-d23ef6b0993e" />
+
+I made this open street map based website and it allows you to input your current longitude and latitude information and then your final desitnation's longitude and latitude information and the application will find the shortest distance and start direction and show a tracker with a taxi icon. You can also make this process automatic with pressing the button that fills your current location automatically. Alternatively the city by default is set to Philadelphia and you can click around to other locations and get directions there. 
