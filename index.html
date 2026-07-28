@@ -61,7 +61,7 @@
              */
             gap:10%;
             top:10px;
-            right:26%;
+            right:26%; 
         }
     </style>
 </head>
@@ -71,78 +71,97 @@
         it leaflet detects a 'click' location under the input area. 
         to fix this we add an event listener and don't listen for events 
         happening on the input area: -->
+
         <div id="location_inputs">
             <h1>Your location info HERE:</h1>
             <input type="text" id="myLongitude" placeholder="Type your Longitude here">
             <input type="text" id="myLatitude" placeholder="Type your Latitude here">
-
+            <button id="submit" type="submit">SUBMIT</button>
             <h1>Your destination info HERE:</h1>
             <input type="text" id="myDesintationLongitude" placeholder="Type your locationLongitude here">
             <input type="text" id="myDesintationLatitude" placeholder="Type your locationLatitude here">
         </div>
     </div>
-
     <script src="https://unpkg.com/leaflet@1.8.0/dist/leaflet.js"></script>
     <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
     <script>
-        var map = L.map('map').setView([40.0001, -75.1956], 11);
-        var tileLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        const map = L.map('map').setView([40.0001, -75.1956], 11);
+        const tileLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributor',
             maxZoom: 19
         }).addTo(map);
-        var taxiIcon = L.icon({
+        const taxiIcon = L.icon({
             iconUrl: 'https://cn-geo1.uber.com/image-proc/crop/resizecrop/udam/format=auto/width=835/height=470/srcb64=aHR0cHM6Ly90Yi1zdGF0aWMudWJlci5jb20vcHJvZC91ZGFtLWFzc2V0cy8xZDI2ZDMwYS0zMTNhLTQ3ZjktYTdjYS1kZDllMmRhZTk0NDUucG5n',
             iconSize: [130, 70]
         })
         
-        var markerMyLoc = L.marker([40.0001, -75.1956], { icon: taxiIcon }).addTo(map);
+        const markerMyLoc = L.marker([40.0001, -75.1956], { icon: taxiIcon }).addTo(map);
 
-        var inputMyLongitudeID = document.getElementById("myLongitude")
-        var inputMyLongitudeVal = inputLongitudeID.value;
-        var inputMyLatitudeID = document.getElementById("myLatitude");
-        var inputMyLatitudeVal = inputLatitudeID.value;
+        const inputMyLongitudeID = document.getElementById("myLongitude")
+        const inputMyLongitudeVal = inputMyLongitudeID.value;
+        const inputMyLatitudeID = document.getElementById("myLatitude");
+        const inputMyLatitudeVal = inputMyLatitudeID.value;
 
-        var inputLocationLongitudeID = document.getElementById("myDesintationLongitude")
-        var inputLocationLongitudeVal = inputLongitudeID.value;
-        var inputLocationLatitudeID = document.getElementById("myDesintationLatitude");
-        var inputLocationLatitudeVal = inputLatitudeID.value;
+        const inputLocationLongitudeID = document.getElementById("myDesintationLongitude")
+        const inputLocationLongitudeVal = inputLocationLongitudeID.value;
+        const inputLocationLatitudeID = document.getElementById("myDesintationLatitude");
+        const inputLocationLatitudeVal = inputLocationLatitudeID.value;
         
-        var stopListening1 = document.getElementById("myLongitude");
-        var stopListening2 = document.getElementById("myLatitude");
-        var stopListening3 = document.getElementById("myDesintationLongitude");
-        var stopListening4 = document.getElementById("myDesintationLatitude");
+        const stopListening1 = document.getElementById("myLongitude");
+        const stopListening2 = document.getElementById("myLatitude");
+        const stopListening3 = document.getElementById("myDesintationLongitude");
+        const stopListening4 = document.getElementById("myDesintationLatitude");
+
         // if(inputDesintationVal){
-        //     var marker = L.marker([])
+        //     const marker = L.marker([])
             
         // }
-
+        
         // this is the fix for the input, leaflet provides a solution for this:
         L.DomEvent.disableClickPropagation(stopListening1);
         L.DomEvent.disableClickPropagation(stopListening2);
         L.DomEvent.disableClickPropagation(stopListening3);
         L.DomEvent.disableClickPropagation(stopListening4);
+        L.DomEvent.disableClickPropagation(document.getElementById('location_inputs'));
         
+        document.getElementById('submit').addEventListener('click', function() {
+            const startLat = parseFloat(inputMyLatitudeID.value);
+            const startLng = parseFloat(inputMyLongitudeID.value);
+            const endLng = parseFloat(inputLocationLongitudeID.value);
+            const endLat = parseFloat(inputLocationLatitudeID.value);
 
+            markerMyLoc.setLatLng([startLat,startLng]);
+            L.Routing.control({
+                waypoints:[
+                    L.latLng(startLat,startLng),
+                    L.latLng(endLat,endLng)
+                ]
+            }).on('routesfound', function(e) {
+                e.routes[0].coordinates.forEach(function (coord, index) {
+                    setTimeout(function () {
+                        markerMyLoc.setLatLng([coord.lat, coord.lng]);
+                    }, 100*index)
+                })
+            }).addTo(map);
+        });
         // so this works when you click on the map, and where user clicks.
         map.on('click', function (e) {
-            var newMarker = L.marker([e.latlng.lat, e.latlng.lng]).addTo(map);
+            const newMarker = L.marker([e.latlng.lat, e.latlng.lng]).addTo(map);
             L.Routing.control({
                 waypoints: [
-                    marker.getLatLng(),
+                    markerMyLoc.getLatLng(),
                     L.latLng(e.latlng.lat, e.latlng.lng)
                 ]
             }).on('routesfound', function (e) {
-                var routes = e.routes;
+                const routes = e.routes;
                 e.routes[0].coordinates.forEach(function (coord, index) {
                     setTimeout(function () {
-                        marker.setLatLng([coord.lat, coord.lng]);
+                        markerMyLoc.setLatLng([coord.lat, coord.lng]);
                     }, 100 * index)
                 })
             }).addTo(map);
         });
-
         // map.on(stopListening.innerHTML, function(e) {
-
         // })
     </script>
 </body>
